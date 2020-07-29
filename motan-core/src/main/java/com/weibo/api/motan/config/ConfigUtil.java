@@ -24,6 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.weibo.api.motan.common.MotanConstants;
 import com.weibo.api.motan.exception.MotanServiceException;
 import com.weibo.api.motan.util.MathUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -34,6 +36,8 @@ import com.weibo.api.motan.util.MathUtil;
  */
 
 public class ConfigUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConfigUtil.class);
 
     /**
      * export fomart: protocol1:port1,protocol2:port2
@@ -55,17 +59,19 @@ public class ConfigUtil {
             String[] ppDetail = pp.split(":");
 
             if (ppDetail.length == 2) {
-                if (MotanConstants.PROTOCOL_INJVM.equals(ppDetail[0])) {
-                    pps.put(ppDetail[0], Integer.parseInt(ppDetail[1]));
-                } else {
-                    pps.put(ppDetail[0], parsePort(ppDetail[1]));
-                }
+                pps.put(ppDetail[0], Integer.parseInt(ppDetail[1]));
             } else if (ppDetail.length == 1) {
                 if (MotanConstants.PROTOCOL_INJVM.equals(ppDetail[0])) {
                     pps.put(ppDetail[0], MotanConstants.DEFAULT_INT_VALUE);
                 } else {
-                    pps.put(MotanConstants.PROTOCOL_MOTAN, parsePort(ppDetail[0]));
-
+                    int port = MathUtil.parseInt(ppDetail[0], 0);
+                    if (port <= 0) {
+                        int randomPort = NetUtils.getRandomPort();
+                        pps.put(ppDetail[0], randomPort);
+                        logger.warn("Export random port: {} random port {}", export, randomPort);
+                    } else {
+                        pps.put(MotanConstants.PROTOCOL_MOTAN, port);
+                    }
                 }
             } else {
                 throw new MotanServiceException("Export is malformed :" + export);
