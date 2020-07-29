@@ -53,8 +53,13 @@ public class ConfigUtil {
                 continue;
             }
             String[] ppDetail = pp.split(":");
+
             if (ppDetail.length == 2) {
-                pps.put(ppDetail[0], parsePort(ppDetail[1]));
+                if (MotanConstants.PROTOCOL_INJVM.equals(ppDetail[0])) {
+                    pps.put(ppDetail[0], Integer.parseInt(ppDetail[1]));
+                } else {
+                    pps.put(ppDetail[0], parsePort(ppDetail[1]));
+                }
             } else if (ppDetail.length == 1) {
                 if (MotanConstants.PROTOCOL_INJVM.equals(ppDetail[0])) {
                     pps.put(ppDetail[0], MotanConstants.DEFAULT_INT_VALUE);
@@ -62,7 +67,6 @@ public class ConfigUtil {
                     pps.put(MotanConstants.PROTOCOL_MOTAN, parsePort(ppDetail[0]));
 
                 }
-
             } else {
                 throw new MotanServiceException("Export is malformed :" + export);
             }
@@ -71,13 +75,7 @@ public class ConfigUtil {
     }
 
     public static int parsePort(String portInfo) {
-        int port = MathUtil.parseInt(portInfo, 0);
-        if (port <= 0) {
-            return NetUtils.getAvailablePort();
-        }
-
-        return port;
-
+        return NetUtils.getAvailablePort(Integer.parseInt(portInfo));
     }
 
     public static String extractProtocols(String export) {

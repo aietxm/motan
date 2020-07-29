@@ -55,11 +55,12 @@ public class SpringSupportTest extends BaseTest {
     @Test
     public void testServiceConfig() {
         Map<String, ServiceConfig> map = cp.getBeansOfType(ServiceConfig.class);
-        assertEquals(3, map.size());
+        assertEquals(4, map.size());
         ServiceConfig serviceTest = map.get("serviceTest");
         ServiceConfig serviceTestWithMethodConfig = map.get("serviceTestWithMethodConfig");
         ServiceConfig serviceTestInjvm = map.get("serviceTestInjvm");
-        assertTrue(serviceTest != null && serviceTestWithMethodConfig != null && serviceTestInjvm != null);
+        ServiceConfig serviceConfigRandomPort = map.get("serviceTestRandomPort");
+        assertTrue(serviceTest != null && serviceTestWithMethodConfig != null && serviceTestInjvm != null && serviceConfigRandomPort!=null);
     }
 
     @SuppressWarnings("rawtypes")

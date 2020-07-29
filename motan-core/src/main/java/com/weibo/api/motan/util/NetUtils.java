@@ -22,6 +22,7 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.weibo.api.motan.exception.MotanServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +49,10 @@ public class NetUtils {
 
     private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
 
-    private static final int DEFAULT_PORT = 20000;
-    private static final int MAX_PORT_NUM = 65535;
+    private static final int DEFAULT_PORT = 33000;
+    private static final int MIN_PORT = 0;
+    private static final int MAX_PORT = 65535;
+
 
     public static boolean isInvalidLocalHost(String host) {
         return host == null || host.length() == 0 || host.equalsIgnoreCase("localhost") || host.equals("0.0.0.0")
@@ -166,9 +169,21 @@ public class NetUtils {
         return null;
     }
 
-    public static int getAvailablePort() {
-        int port = DEFAULT_PORT;
-        for (int i = port; i <= MAX_PORT_NUM; i++) {
+    public static int getRandomPort() {
+        try (ServerSocket serverSocket = new ServerSocket()) {
+            serverSocket.bind(null);
+            return serverSocket.getLocalPort();
+        } catch (IOException e) {
+            throw new MotanServiceException("Failed to get a random port, " + e.getMessage());
+        }
+    }
+
+
+    public static int getAvailablePort(int port) {
+        if (port <= 0) {
+            return getRandomPort();
+        }
+        for (int i = port; i <= MAX_PORT; i++) {
             try (ServerSocket serverSocket = new ServerSocket(i)) {
                 return port;
             } catch (IOException ignore) {
@@ -177,6 +192,10 @@ public class NetUtils {
 
         return port;
 
+    }
+
+    public static boolean isAvailablePort(int port) {
+        return port >= MIN_PORT && port <= MAX_PORT;
     }
 
     public static boolean isValidAddress(String address) {

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import com.weibo.api.motan.util.NetUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,13 +36,14 @@ public class ServiceConfigBeanTest extends BaseTest {
     ServiceConfig<ITest> serviceTest;
     ServiceConfig<ITest> serviceTest2;
     ServiceConfig<ITest> serviceTest3;
-
+    ServiceConfig<ITest> serviceTest4;
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Before
     public void setUp() throws Exception {
         serviceTest = (ServiceConfig) cp.getBean("serviceTest");
         serviceTest2 = (ServiceConfig) cp.getBean("serviceTestWithMethodConfig");
         serviceTest3 = (ServiceConfig) cp.getBean("serviceTestInjvm");
+        serviceTest4 = (ServiceConfig) cp.getBean("serviceTestRandomPort");
     }
 
     @After
@@ -60,6 +62,22 @@ public class ServiceConfigBeanTest extends BaseTest {
         assertTrue(serviceTest.getExported().get());
         assertTrue(serviceTest2.getExported().get());
         assertTrue(serviceTest3.getExported().get());
+        assertTrue(serviceTest4.getExported().get());
+    }
+
+    @Test
+    public void testAvailablePort(){
+        List<Exporter<ITest>> exporters = serviceTest4.getExporters();
+        assertEquals(1,exporters.size());
+        boolean motan = false;
+        for (Exporter<ITest> exporter : exporters) {
+            URL url = exporter.getUrl();
+            if ("motan".equals(url.getProtocol()) && url.getPort()!=0 && NetUtils.isAvailablePort(url.getPort())) {
+                motan = true;
+            }
+        }
+
+        assertTrue( motan);
     }
 
     @Test

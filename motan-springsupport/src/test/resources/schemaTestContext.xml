@@ -58,6 +58,10 @@
     <motan:service interface="com.weibo.api.motan.config.springsupport.ITest"
                    ref="test" id="serviceTest" export="injvm:0,motan:7888" registry="myLocal,mockRegistry"
                    application="test1" module="test1"/>
+
+    <motan:service interface="com.weibo.api.motan.config.springsupport.ITest"
+                   ref="test" id="serviceTestRandomPort" export="motan:0" registry="myLocal,mockRegistry"
+                   application="test1" module="test1"/>
     <!-- referer with method configs -->
     <motan:service id="serviceTestWithMethodConfig"
                    interface="com.weibo.api.motan.config.springsupport.ITest" ref="test" export="motan:18080"
