@@ -49,7 +49,6 @@ public class NetUtils {
 
     private static final Pattern IP_PATTERN = Pattern.compile("\\d{1,3}(\\.\\d{1,3}){3,5}$");
 
-    private static final int DEFAULT_PORT = 33000;
     private static final int MIN_PORT = 0;
     private static final int MAX_PORT = 65535;
 
@@ -182,6 +181,9 @@ public class NetUtils {
     public static int getAvailablePort(int port) {
         if (port <= 0) {
             return getRandomPort();
+        }
+        if (!isAvailablePort(port)) {
+            throw new MotanServiceException("Port is illegal, port " + port);
         }
         for (int i = port; i <= MAX_PORT; i++) {
             try (ServerSocket serverSocket = new ServerSocket(i)) {

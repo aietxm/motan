@@ -80,9 +80,6 @@ public class ConfigUtil {
         return pps;
     }
 
-    public static int parsePort(String portInfo) {
-        return NetUtils.getAvailablePort(Integer.parseInt(portInfo));
-    }
 
     public static String extractProtocols(String export) {
         Map<String, Integer> protocols = parseExport(export);
